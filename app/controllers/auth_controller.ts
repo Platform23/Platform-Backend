@@ -32,9 +32,18 @@ export default class AuthController {
 
       return response.status(201).json({ message: 'User registered successfully.' })
     } catch (error) {
-      return response.status(422).json({
-        error: error,
-      })
+      if (error.code === 'E_VALIDATION_ERROR') {
+        return response.status(422).json({ mesaages: error.messages })
+      }
+
+      if (error.code === '23505') {
+        const conflictField = error.constraint.includes('email') ? 'email' : 'pseudo'
+        return response
+          .status(409)
+          .json({ message: `User with this ${conflictField} already exists.` })
+      }
+
+      return response.internalServerError({ message: 'An error occurred during registration.' })
     }
   }
 
@@ -62,65 +71,81 @@ export default class AuthController {
 
       return response.status(200).json({ message: 'Login successful.' })
     } catch (error) {
-      return response.status(error.status).json({
-        error: error,
-      })
+      if (error.code === 'E_VALIDATION_ERROR') {
+        return response.status(422).json({ messages: error.messages })
+      }
+
+      if (error.code === 'E_INVALID_CREDENTIALS') {
+        return response.unauthorized({ message: 'Invalid email, pseudo or password.' })
+      }
+
+      return response.internalServerError({ message: 'An error occurred during login.' })
     }
   }
 
   // Request a password reset
   async forgotPassword({ request, response }: HttpContext) {
-    const { email } = await request.validateUsing(emailValidator)
-    const user = await User.findBy('email', email)
+    try {
+      const { email } = await request.validateUsing(emailValidator)
+      const user = await User.findBy('email', email)
 
-    if (!user) {
-      return response.badRequest({ message: 'User not found.' })
+      if (!user) {
+        return response.badRequest({ message: 'User not found.' })
+      }
+
+      const token = await Token.generatePasswordResetToken(user)
+      const resetLink = router.makeUrl('password.reset', [token])
+
+      await mail.sendLater((message) => {
+        message
+          .from('jclaytonblanc@gmail.com ')
+          .to(user.email)
+          .subject('Réinitialisez votre mot de passe')
+          .html(
+            `Réinitialisez votre mot de passe par <a href="${env.get('DOMAIN')}${resetLink}">en cliquant ici</a>`
+          )
+      })
+
+      return response.status(200).json({ message: 'Password reset email sent.' })
+    } catch (error) {
+      return response.internalServerError({
+        message: 'An error occurred while requesting a password reset.',
+      })
     }
-
-    const token = await Token.generatePasswordResetToken(user)
-    const resetLink = router.makeUrl('password.reset', [token])
-
-    await mail.sendLater((message) => {
-      message
-        .from('jclaytonblanc@gmail.com ')
-        .to(user.email)
-        .subject('Réinitialisez votre mot de passe')
-        .html(
-          `Réinitialisez votre mot de passe par <a href="${env.get('DOMAIN')}${resetLink}">en cliquant ici</a>`
-        )
-    })
-
-    return response.status(200).json({ message: 'Password reset email sent.' })
   }
 
   // Reset user password using token
   async resetPassword({ auth, params, request, response }: HttpContext) {
-    const token = params.token
+    try {
+      const token = params.token
 
-    const { password } = await request.validateUsing(passwordValidator)
+      const { password } = await request.validateUsing(passwordValidator)
 
-    const user = await Token.getTokenUser(token, 'PASSWORD_RESET')
+      const user = await Token.getTokenUser(token, 'PASSWORD_RESET')
 
-    if (!user) {
-      return response.badRequest({ message: 'Invalid or expired token.' })
+      if (!user) {
+        return response.badRequest({ message: 'Invalid or expired token.' })
+      }
+
+      await user.merge({ password }).save()
+      await auth.use('web').login(user, !!request.input('remember_me'))
+      await Token.expireTokens(user, 'passwordResetTokens')
+
+      return response.status(200).json({ message: 'Password reset successful.' })
+    } catch (error) {
+      return response.internalServerError({
+        message: 'An error occurred while resetting the password.',
+      })
     }
-
-    await user.merge({ password }).save()
-    await auth.use('web').login(user, !!request.input('remember_me'))
-    await Token.expireTokens(user, 'passwordResetTokens')
-
-    return response.status(200).json({ message: 'Password reset successful.' })
   }
 
   // Logout the currently authenticated user
   async logout({ auth, response }: HttpContext) {
     try {
       await auth.use('web').logout()
-      return response.status(204)
+      return response.noContent()
     } catch (error) {
-      return response.status(error.status).json({
-        error: error.name,
-      })
+      return response.internalServerError({ message: 'An error occurred during logout.' })
     }
   }
 }
