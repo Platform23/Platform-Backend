@@ -16,7 +16,7 @@ export default class extends BaseSchema {
       table.string('title').notNullable()
       table.string('organization').notNullable()
       table.timestamp('start_date').notNullable()
-      table.timestamp('end_date').notNullable()
+      table.timestamp('end_date').nullable()
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

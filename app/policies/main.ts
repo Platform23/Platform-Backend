@@ -13,5 +13,6 @@
 */
 
 export const policies = {
+  ExperiencePolicy: () => import('#policies/experience_policy'),
   UserPolicy: () => import('#policies/user_policy')
 }
