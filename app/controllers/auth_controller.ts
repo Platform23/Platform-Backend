@@ -21,6 +21,7 @@ export default class AuthController {
         pseudo: payload.pseudo,
         email: payload.email,
         password: payload.password,
+        role: payload.role ?? 1,
       })
 
       await user.related('competences').attach(payload.competences)

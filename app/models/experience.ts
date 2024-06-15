@@ -20,7 +20,7 @@ export default class Experience extends BaseModel {
   declare startDate: DateTime
 
   @column.dateTime()
-  declare endDate: DateTime
+  declare endDate: DateTime | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

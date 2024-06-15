@@ -8,7 +8,7 @@ export default class UserPolicy extends BasePolicy {
   }
 
   index(user: User): AuthorizerResponse {
-    return user.role === 2
+    return user.role === 3
   }
 
   show(): AuthorizerResponse {
@@ -16,10 +16,10 @@ export default class UserPolicy extends BasePolicy {
   }
 
   edit(user: User, targetUser: User): AuthorizerResponse {
-    return user.role === 2 || user.id === targetUser.id
+    return user.role === 3 || user.id === targetUser.id
   }
 
   delete(user: User, targetUser: User): AuthorizerResponse {
-    return user.role === 2 || user.id === targetUser.id
+    return user.role === 3 || user.id === targetUser.id
   }
 }
