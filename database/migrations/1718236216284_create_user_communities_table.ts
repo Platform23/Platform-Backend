@@ -19,6 +19,7 @@ export default class extends BaseSchema {
       .references('communities.id')
       .onDelete('CASCADE')
       .notNullable()
+      table.unique(['user_id', 'community_id'])
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

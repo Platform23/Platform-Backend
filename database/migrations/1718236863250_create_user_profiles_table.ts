@@ -19,6 +19,7 @@ export default class extends BaseSchema {
       .references('profiles.id')
       .onDelete('CASCADE')
       .notNullable()
+      table.unique(['user_id', 'profile_id'])
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

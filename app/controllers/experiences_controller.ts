@@ -75,6 +75,10 @@ export default class ExperiencesController {
 
       return response.status(200).json({ data: experience })
     } catch (error) {
+      if (error.code === 'E_VALIDATION_ERROR') {
+        return response.status(422).json({ messages: error.messages })
+      }
+
       return response.internalServerError({
         message: 'An error occurred while updating experience.',
       })

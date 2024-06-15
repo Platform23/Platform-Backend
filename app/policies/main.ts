@@ -13,6 +13,8 @@
 */
 
 export const policies = {
+  MessagePolicy: () => import('#policies/message_policy'),
+  NetworkPolicy: () => import('#policies/network_policy'),
   ExperiencePolicy: () => import('#policies/experience_policy'),
   UserPolicy: () => import('#policies/user_policy')
 }

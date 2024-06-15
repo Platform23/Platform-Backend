@@ -4,13 +4,17 @@ import { BaseSeeder } from '@adonisjs/lucid/seeders'
 export default class extends BaseSeeder {
   async run() {
     await Competence.createMany([
-      { name: 'Traiter de l’information et des médias.' },
-      { name: 'Maîtriser des outils et des techniques numériques.' },
-      { name: 'Communautés de réparateurs' },
-      { name: 'Communiquer et collaborer numériquement.' },
-      { name: 'Utiliser des outils numériques pour la recherche.' },
-      { name: 'Promouvoir l’inclusion et la diversité via le numérique.' },
-      { name: 'Utiliser le numérique pour le développement professionnel.' },
+      {
+        name: "Savoir utiliser les technologies numériques pour la gestion de l'information et des médias",
+      },
+      { name: 'Savoir utiliser les technologies numériques pour communiquer et collaborer' },
+      { name: 'Faire preuse de pensée computationnelle et critique' },
+      {
+        name: 'Utiliser les technologies numériques pour favoriser son insertion et son développement professionnel',
+      },
+      { name: 'Mobiliser ses habiletés technologiques et numériques pour innover et créer' },
+      { name: 'Savoir gérer et piloter des projets avec une communauté de professionnel.le.s' },
+      { name: 'Accompagner – Former et apprendre avec les autres' },
     ])
   }
 }

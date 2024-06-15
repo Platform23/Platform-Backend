@@ -14,6 +14,7 @@ const AuthController = () => import('#controllers/auth_controller')
 const UsersController = () => import('#controllers/users_controller')
 const ImagesController = () => import('#controllers/images_controller')
 const ExperiencesController = () => import('#controllers/experiences_controller')
+const NetworksController = () => import('#controllers/networks_controller')
 
 router.get('health', ({ response }) => response.noContent())
 
@@ -46,7 +47,7 @@ router
         .resource('users', UsersController)
         .use(
           ['index', 'show', 'update', 'destroy'],
-          [middleware.auth(), middleware.emailVerification(), middleware.emailVerification()]
+          [middleware.auth(), middleware.emailVerification()]
         )
 
       // Experiences routes
@@ -66,6 +67,21 @@ router
           router.get('/:type/*', [ImagesController, 'show'])
         })
         .prefix('uploads')
+
+      // Networks routes
+      router
+        .group(() => {
+          router.get('/', [NetworksController, 'index'])
+          router.get('/:id', [NetworksController, 'show'])
+          router.post('/', [NetworksController, 'store'])
+          router.put('/:id', [NetworksController, 'update'])
+          router.delete('/:id', [NetworksController, 'destroy'])
+          router.post('/:id/request', [NetworksController, 'requestIntegration'])
+          router.post('/:id/add-user/:pseudo', [NetworksController, 'addUserToNetwork'])
+          router.delete('/:id/remove-user/:pseudo', [NetworksController, 'removeUserFromNetwork'])
+        })
+        .use([middleware.auth(), middleware.emailVerification()])
+        .prefix('networks')
     })
   })
   .prefix('api')

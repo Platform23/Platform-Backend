@@ -24,6 +24,9 @@ export default class ImagesController {
       case 'chat_images':
         basePath = 'uploads/chat_images'
         break
+      case 'network_images':
+        basePath = 'uploads/network_images'
+        break
       default:
         return response.badRequest('Invalid image type')
     }

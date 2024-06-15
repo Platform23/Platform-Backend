@@ -114,6 +114,10 @@ export default class UsersController {
         return response.forbidden('Access denied')
       }
 
+      await user.related('communities').detach()
+      await user.related('competences').detach()
+      await user.related('networks').detach()
+      await user.related('profiles').detach()
       await user.delete()
 
       return response.status(204).json({ message: 'User successfully deleted' })
