@@ -1,12 +1,12 @@
-### Platform - Backend
+# Platform - Backend
 
-#### Technologies Used
+## Technologies Used
 
 - **Backend Framework**: AdonisJs
 - **Database**: PostgreSQL
 - **Containerization**: Docker
 
-#### Features
+## Features
 
 - **Authentication**: Register, login, logout, forgot password, reset password.
 - **Email Verification**: Verify email addresses with token-based confirmation.
@@ -16,7 +16,7 @@
 - **Networks**: Manage networks, including CRUD operations, user integration requests, and user management under `/api/networks`.
 - **Chats**: Manage chat messages with CRUD operations under `/api/messages`.
 
-#### Getting Started
+## Getting Started
 
 To get started with this project, follow these steps:
 
@@ -54,7 +54,7 @@ To get started with this project, follow these steps:
 6. **Access API Routes**
    - Once the server is running, you can access the API at `http://localhost:3333/api`.
 
-#### API Routes
+## API Routes
 
 - **Health Check**: `GET /health`
 - **Authentication**:
