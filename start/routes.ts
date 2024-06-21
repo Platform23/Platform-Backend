@@ -15,6 +15,7 @@ const UsersController = () => import('#controllers/users_controller')
 const ImagesController = () => import('#controllers/images_controller')
 const ExperiencesController = () => import('#controllers/experiences_controller')
 const NetworksController = () => import('#controllers/networks_controller')
+const ChatsController = () => import('#controllers/chats_controller')
 
 router.get('health', ({ response }) => response.noContent())
 
@@ -82,6 +83,15 @@ router
         })
         .use([middleware.auth(), middleware.emailVerification()])
         .prefix('networks')
+
+      // Chats routes
+      router
+        .group(() => {
+          router.get('/:id', [ChatsController, 'index'])
+          router.post('/', [ChatsController, 'store'])
+        })
+        .use([middleware.auth(), middleware.emailVerification()])
+        .prefix('messages')
     })
   })
   .prefix('api')

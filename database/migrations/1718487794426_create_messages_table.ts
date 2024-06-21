@@ -5,8 +5,17 @@ export default class extends BaseSchema {
 
   async up() {
     this.schema.createTable(this.tableName, (table) => {
-      table.increments('id')
-
+      table.uuid('id').primary()
+      table.integer('user_id').unsigned().references('users.id').onDelete('CASCADE').notNullable()
+      table
+        .integer('network_id')
+        .unsigned()
+        .references('networks.id')
+        .onDelete('CASCADE')
+        .notNullable()
+      table.text('content').notNullable()
+      table.string('image_path').notNullable()
+      table.boolean('deleted').defaultTo(false)
       table.timestamp('created_at')
       table.timestamp('updated_at')
     })

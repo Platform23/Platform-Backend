@@ -14,6 +14,7 @@ import router from '@adonisjs/core/services/router'
 import mail from '@adonisjs/mail/services/main'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import Network from './network.js'
+import Message from './message.js'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email', 'pseudo'],
@@ -74,6 +75,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @hasMany(() => Experience)
   declare experiences: HasMany<typeof Experience>
+
+  @hasMany(() => Message)
+  declare messages: HasMany<typeof Message>
 
   @manyToMany(() => Network, {
     pivotTable: 'user_networks',

@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, manyToMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, hasMany, manyToMany } from '@adonisjs/lucid/orm'
 import Subject from './subject.js'
-import type { ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany, ManyToMany } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
+import Message from './message.js'
 
 export default class Network extends BaseModel {
   @column({ isPrimary: true })
@@ -35,4 +36,7 @@ export default class Network extends BaseModel {
     pivotTable: 'user_networks',
   })
   declare users: ManyToMany<typeof User>
+
+  @hasMany(() => Message)
+  declare messages: HasMany<typeof Message>
 }
