@@ -28,9 +28,8 @@ router
         router.post('/login', [AuthController, 'login'])
         router.post('/logout', [AuthController, 'logout']).use(middleware.auth())
         router.post('/forgot-password', [AuthController, 'forgotPassword']).as('password.send')
-        router
-          .post('/reset-password/:token', [AuthController, 'resetPassword'])
-          .as('password.reset')
+        router.post('/reset-password/:token', [AuthController, 'resetPassword'])
+        router.get('/me', [AuthController, 'getuserInfo']).use(middleware.auth())
       })
 
       // Email verification routes
@@ -38,10 +37,7 @@ router
         .get('/verify/email', [VerifyEmailsController, 'index'])
         .as('verify.email')
         .use(middleware.auth())
-      router
-        .get('/verify/email/:token', [VerifyEmailsController, 'verify'])
-        .as('verify.email.verify')
-        .use(middleware.auth())
+      router.get('/verify/email/:token', [VerifyEmailsController, 'verify']).use(middleware.auth())
 
       // Users routes
       router
@@ -73,6 +69,9 @@ router
       router
         .group(() => {
           router.get('/', [NetworksController, 'index'])
+          router
+            .get('/user-networks', [NetworksController, 'getUserNetworks'])
+            .use([middleware.auth(), middleware.emailVerification()])
           router.get('/:id', [NetworksController, 'show'])
           router.post('/', [NetworksController, 'store'])
           router.put('/:id', [NetworksController, 'update'])

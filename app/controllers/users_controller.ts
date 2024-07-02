@@ -12,7 +12,7 @@ export default class UsersController {
   async index({ bouncer, response }: HttpContext) {
     try {
       if (await bouncer.with(UserPolicy).denies('index')) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       const users = await User.all()
@@ -20,7 +20,7 @@ export default class UsersController {
       return response.status(200).json({ data: users })
     } catch (error) {
       return response.internalServerError({
-        message: 'An error occurred while fetching the users.',
+        message: "Une erreur s'est produite lors de la récupération des utilisateurs.",
       })
     }
   }
@@ -30,16 +30,24 @@ export default class UsersController {
    */
   async show({ params, response }: HttpContext) {
     try {
-      const user = await User.find(params.id)
+      const user = await User.query()
+        .where('uuid', params.id)
+        .preload('competences', (competence) => competence.select('name'))
+        .preload('profiles', (profile) => profile.select('name'))
+        .preload('communities', (community) => community.select('name'))
+        .preload('experiences', (experience) =>
+          experience.select('title', 'organization', 'start_date', 'end_date')
+        )
+        .first()
 
       if (!user) {
-        return response.status(404).json({ message: 'User not found.' })
+        return response.status(404).json({ message: 'Utilisateur non trouvé.' })
       }
 
       return response.status(200).json({ data: user })
     } catch (error) {
       return response.internalServerError({
-        message: 'An error occurred while fetching the user.',
+        message: "Une erreur s'est produite lors de la récupération de l'utilisateur.",
       })
     }
   }
@@ -53,11 +61,11 @@ export default class UsersController {
       const user = await User.find(params.id)
 
       if (!user) {
-        return response.status(404).json({ message: 'User not found.' })
+        return response.status(404).json({ message: 'Utilisateur non trouvé.' })
       }
 
       if (await bouncer.with(UserPolicy).denies('edit', user)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       const isUserAvaterNull = user.avatar === null
@@ -94,7 +102,7 @@ export default class UsersController {
       }
 
       return response.status(500).json({
-        message: 'An error occurred while updating the user.',
+        message: "Une erreur s'est produite lors de la mise à jour de l'utilisateur.",
       })
     }
   }
@@ -107,11 +115,11 @@ export default class UsersController {
       const user = await User.find(params.id)
 
       if (!user) {
-        return response.status(404).json({ message: 'User not found.' })
+        return response.status(404).json({ message: 'Utilisateur non trouvé.' })
       }
 
       if (await bouncer.with(UserPolicy).denies('delete', user)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       await user.related('communities').detach()
@@ -120,10 +128,10 @@ export default class UsersController {
       await user.related('profiles').detach()
       await user.delete()
 
-      return response.status(204).json({ message: 'User successfully deleted' })
+      return response.status(204).json({ message: 'Utilisateur supprimé avec succès' })
     } catch (error) {
       return response.status(500).json({
-        message: 'An error occurred while deleting the user.',
+        message: "Une erreur s'est produite lors de la suppression de l'utilisateur.",
       })
     }
   }

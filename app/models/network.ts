@@ -10,6 +10,9 @@ export default class Network extends BaseModel {
   declare id: number
 
   @column()
+  declare uuid: string
+
+  @column()
   declare userId: number
 
   @column()

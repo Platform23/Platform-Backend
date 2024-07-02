@@ -8,8 +8,8 @@ import {
   registerUserValidator,
 } from '#validators/auth'
 import type { HttpContext } from '@adonisjs/core/http'
-import router from '@adonisjs/core/services/router'
 import mail from '@adonisjs/mail/services/main'
+import { randomUUID } from 'node:crypto'
 
 export default class AuthController {
   // Register a new user
@@ -18,6 +18,7 @@ export default class AuthController {
       const payload = await request.validateUsing(registerUserValidator)
 
       const user = await User.create({
+        uuid: randomUUID(),
         pseudo: payload.pseudo,
         email: payload.email,
         password: payload.password,
@@ -30,21 +31,22 @@ export default class AuthController {
 
       await auth.use('web').login(user, !!request.input('remember_me'))
       await user.sendVerifyEmail()
-
-      return response.status(201).json({ message: 'User registered successfully.' })
+      return response.status(201).json({ data: user })
     } catch (error) {
       if (error.code === 'E_VALIDATION_ERROR') {
-        return response.status(422).json({ mesaages: error.messages })
+        return response.status(422).json({ messages: error.messages })
       }
 
       if (error.code === '23505') {
         const conflictField = error.constraint.includes('email') ? 'email' : 'pseudo'
         return response
           .status(409)
-          .json({ message: `User with this ${conflictField} already exists.` })
+          .json({ message: `L'utilisateur avec ce(t) ${conflictField} existe déjà.` })
       }
 
-      return response.internalServerError({ message: 'An error occurred during registration.' })
+      return response.internalServerError({
+        message: "Une erreur s'est produite lors de l'inscription.",
+      })
     }
   }
 
@@ -55,12 +57,12 @@ export default class AuthController {
 
       let user: User
 
-      if (payload.email) {
+      if ('email' in payload) {
         user = await User.verifyCredentials(payload.email, payload.password)
-      } else if (payload.pseudo) {
+      } else if ('pseudo' in payload) {
         user = await User.verifyCredentials(payload.pseudo, payload.password)
       } else {
-        return response.badRequest({ message: 'Email or pseudo is required.' })
+        return response.badRequest({ message: 'Un e-mail ou un pseudo est requis.' })
       }
 
       await auth.use('web').login(user, !!request.input('remember_me'))
@@ -70,17 +72,31 @@ export default class AuthController {
         await auth.user.save()
       }
 
-      return response.status(200).json({ message: 'Login successful.' })
+      return response.status(200).json({ data: user })
     } catch (error) {
       if (error.code === 'E_VALIDATION_ERROR') {
         return response.status(422).json({ messages: error.messages })
       }
 
       if (error.code === 'E_INVALID_CREDENTIALS') {
-        return response.unauthorized({ message: 'Invalid email, pseudo or password.' })
+        return response.unauthorized({ message: 'Email, pseudo ou mot de passe invalide.' })
       }
 
-      return response.internalServerError({ message: 'An error occurred during login.' })
+      return response.internalServerError({
+        message: "Une erreur s'est produite lors de la connexion.",
+      })
+    }
+  }
+
+  // Get user info
+  async getuserInfo({ auth, response }: HttpContext) {
+    try {
+      const user = auth.user
+      return response.status(200).json({ data: user })
+    } catch (error) {
+      return response.internalServerError({
+        message: "Une erreur s'est produite lors de l'obtention des informations utilisateur.",
+      })
     }
   }
 
@@ -91,32 +107,34 @@ export default class AuthController {
       const user = await User.findBy('email', email)
 
       if (!user) {
-        return response.badRequest({ message: 'User not found.' })
+        return response.badRequest({ message: 'Utilisateur non trouvé.' })
       }
 
       const token = await Token.generatePasswordResetToken(user)
-      const resetLink = router.makeUrl('password.reset', [token])
+      const PASSWORD_RESET_ROUTE = `reinitialiser-mot-de-passe`
+      const resetLink = `${env.get('DOMAIN')}/${PASSWORD_RESET_ROUTE}/${token}`
 
       await mail.sendLater((message) => {
         message
-          .from('jclaytonblanc@gmail.com ')
+          .from(env.get('EMAIL'))
           .to(user.email)
           .subject('Réinitialisez votre mot de passe')
-          .html(
-            `Réinitialisez votre mot de passe par <a href="${env.get('DOMAIN')}${resetLink}">en cliquant ici</a>`
-          )
+          .htmlView('emails/reset_password', { user: user, url: resetLink })
       })
 
-      return response.status(200).json({ message: 'Password reset email sent.' })
+      return response
+        .status(200)
+        .json({ message: 'E-mail de réinitialisation du mot de passe envoyé.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'An error occurred while requesting a password reset.',
+        message:
+          "Une erreur s'est produite lors de la demande de réinitialisation du mot de passe.",
       })
     }
   }
 
   // Reset user password using token
-  async resetPassword({ auth, params, request, response }: HttpContext) {
+  async resetPassword({ params, request, response }: HttpContext) {
     try {
       const token = params.token
 
@@ -125,28 +143,30 @@ export default class AuthController {
       const user = await Token.getTokenUser(token, 'PASSWORD_RESET')
 
       if (!user) {
-        return response.badRequest({ message: 'Invalid or expired token.' })
+        return response.badRequest({ message: 'Jeton invalide ou expiré.' })
       }
 
       await user.merge({ password }).save()
-      await auth.use('web').login(user, !!request.input('remember_me'))
       await Token.expireTokens(user, 'passwordResetTokens')
 
-      return response.status(200).json({ message: 'Password reset successful.' })
+      return response.status(200).json({ data: 'Réinitialisation du mot de passe réussie.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'An error occurred while resetting the password.',
+        message: "Une erreur s'est produite lors de la réinitialisation du mot de passe.",
       })
     }
   }
 
   // Logout the currently authenticated user
-  async logout({ auth, response }: HttpContext) {
+  async logout({ session, auth, response }: HttpContext) {
     try {
       await auth.use('web').logout()
-      return response.noContent()
+      session.forget('user')
+      return response.ok({})
     } catch (error) {
-      return response.internalServerError({ message: 'An error occurred during logout.' })
+      return response.internalServerError({
+        message: "Une erreur s'est produite lors de la déconnexion.",
+      })
     }
   }
 }

@@ -7,6 +7,7 @@ import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import mail from '@adonisjs/mail/services/main'
+import { randomUUID } from 'node:crypto'
 
 export default class NetworksController {
   /**
@@ -21,7 +22,25 @@ export default class NetworksController {
       return response.status(200).json({ data: networks })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error while fetching all networks.',
+        message: 'Erreur lors de la récupération de tous les réseaux.',
+      })
+    }
+  }
+
+  /**
+   * Display a list of resource of a user
+   */
+  async getUserNetworks({ auth, response }: HttpContext) {
+    try {
+      const userNetworks = await UserNetwork.query()
+        .where('user_id', auth.user!.id)
+        .select('id', 'user_id', 'network_id')
+        .preload('network', (network) => network.select('id', 'name', 'description', 'cover'))
+
+      return response.status(200).json({ data: userNetworks })
+    } catch (error) {
+      return response.internalServerError({
+        message: "Erreur lors de la récupération de tous les réseaux d'utilisateurs.",
       })
     }
   }
@@ -34,7 +53,7 @@ export default class NetworksController {
       const payload = await request.validateUsing(createNetworkValidator)
 
       if (await bouncer.with(NetworkPolicy).denies('store')) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé.')
       }
 
       if (payload.cover) {
@@ -44,6 +63,7 @@ export default class NetworksController {
       }
 
       const network = await Network.create({
+        uuid: randomUUID(),
         userId: auth.user!.id,
         name: payload.name,
         description: payload.description,
@@ -59,7 +79,7 @@ export default class NetworksController {
       }
 
       return response.internalServerError({
-        message: 'An error occurred while creating network.',
+        message: "Une erreur s'est produite lors de la création du réseau.",
       })
     }
   }
@@ -77,13 +97,13 @@ export default class NetworksController {
         .first()
 
       if (!network) {
-        return response.status(404).json({ message: 'Network not found.' })
+        return response.status(404).json({ message: 'Réseau introuvable.' })
       }
 
       return response.status(200).json({ data: network })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error while fetching network by id.',
+        message: 'Erreur lors de la récupération du réseau par identifiant.',
       })
     }
   }
@@ -97,11 +117,11 @@ export default class NetworksController {
       const network = await Network.find(params.id)
 
       if (!network) {
-        return response.status(404).json({ message: 'Network not found.' })
+        return response.status(404).json({ message: 'Réseau introuvable' })
       }
 
       if (await bouncer.with(NetworkPolicy).denies('edit', network)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       if (payload.cover) {
@@ -126,7 +146,7 @@ export default class NetworksController {
       }
 
       return response.internalServerError({
-        message: 'An error occurred while updating network.',
+        message: "Une erreur s'est produite lors de la mise à jour du réseau.",
       })
     }
   }
@@ -139,20 +159,20 @@ export default class NetworksController {
       const network = await Network.find(params.id)
 
       if (!network) {
-        return response.status(404).json({ message: 'Network not found.' })
+        return response.status(404).json({ message: 'Réseau introuvable.' })
       }
 
       if (await bouncer.with(NetworkPolicy).denies('delete', network)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       await network.related('subjects').detach()
       await network.delete()
 
-      return response.status(204).json({ message: 'Network deleted successfully.' })
+      return response.status(204).json({ message: 'Réseau supprimé avec succès.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'An error occurred while deleting network.',
+        message: "Une erreur s'est produite lors de la suppression du réseau.",
       })
     }
   }
@@ -165,7 +185,7 @@ export default class NetworksController {
       const network = await Network.find(params.id)
 
       if (!network) {
-        return response.status(404).json({ message: 'Network not found.' })
+        return response.status(404).json({ message: 'Réseau introuvable.' })
       }
 
       const creator = await User.find(network.userId)
@@ -195,7 +215,7 @@ export default class NetworksController {
       return response.status(200).json({ message: 'Request to integrate into network successful.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error requesting integration into network.',
+        message: "Erreur lors de la demande d'intégration au réseau.",
       })
     }
   }
@@ -208,16 +228,16 @@ export default class NetworksController {
       const network = await Network.find(params.id)
 
       if (!network) {
-        return response.status(404).json({ message: 'Network not found.' })
+        return response.status(404).json({ message: 'Réseau introuvable.' })
       }
 
       if (await bouncer.with(NetworkPolicy).denies('addUser', network)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       const user = await User.findBy('pseudo', params.pseudo)
       if (!user) {
-        return response.status(404).json({ message: 'User not found.' })
+        return response.status(404).json({ message: 'Utilisateur non trouvé.' })
       }
 
       await UserNetwork.create({
@@ -225,10 +245,10 @@ export default class NetworksController {
         networkId: network.id,
       })
 
-      return response.status(201).json({ message: 'User added to network successfully.' })
+      return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error adding user to network.',
+        message: "Erreur lors de l'ajout d'un utilisateur au réseau.",
       })
     }
   }
@@ -242,29 +262,31 @@ export default class NetworksController {
       const user = await User.findBy('pseudo', params.pseudo)
 
       if (!network) {
-        return response.status(404).json({ message: 'Network not found.' })
+        return response.status(404).json({ message: 'Réseau introuvable.' })
       }
 
       if (!user) {
-        return response.status(404).json({ message: 'User not found.' })
+        return response.status(404).json({ message: 'Utilisateur non trouvé.' })
       }
 
       if (await bouncer.with(NetworkPolicy).denies('removeUser', network)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       const userNetwork = await UserNetwork.findBy({ networkId: network.id, userId: user.id })
 
       if (!userNetwork) {
-        return response.status(404).json({ message: 'User is not a member of this network.' })
+        return response
+          .status(404)
+          .json({ message: "L'utilisateur n'est pas membre de ce réseau." })
       }
 
       await userNetwork.delete()
 
-      return response.status(200).json({ message: 'User removed to network successfully.' })
+      return response.status(200).json({ message: 'Utilisateur supprimé du réseau avec succès.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error removing user from network.',
+        message: "Erreur lors de la suppression de l'utilisateur du réseau.",
       })
     }
   }

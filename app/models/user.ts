@@ -10,7 +10,6 @@ import Profile from './profile.js'
 import Experience from './experience.js'
 import Token from './token.js'
 import env from '#start/env'
-import router from '@adonisjs/core/services/router'
 import mail from '@adonisjs/mail/services/main'
 import { DbRememberMeTokensProvider } from '@adonisjs/auth/session'
 import Network from './network.js'
@@ -24,6 +23,9 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 export default class User extends compose(BaseModel, AuthFinder) {
   @column({ isPrimary: true })
   declare id: number
+
+  @column()
+  declare uuid: string
 
   @column()
   declare fullName: string | null
@@ -102,18 +104,15 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   async sendVerifyEmail() {
     const token = await Token.generateVerifyEmailToken(this)
-    const domain = env.get('DOMAIN')
-    const path = router.makeUrl('verify.email.verify', [token])
-    const url = domain + path
+    const ROUTE = 'verifier-email'
+    const url = `${env.get('DOMAIN')}/${ROUTE}/${token}`
 
     await mail.sendLater((message) => {
       message
         .subject('Veuillez vérifier votre e-mail')
-        .from('jclaytonblanc@gmail.com ')
-        .to(this.email).html(`
-            Veuillez cliquer sur le lien suivant pour vérifier votre email
-            <a href="${url}">Vérifier l'email</a>
-          `)
+        .from(env.get('EMAIL'))
+        .to(this.email)
+        .htmlView('emails/verify_email', { user: this, url: url })
     })
   }
 }

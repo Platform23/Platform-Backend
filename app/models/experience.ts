@@ -16,11 +16,11 @@ export default class Experience extends BaseModel {
   @column()
   declare organization: string
 
-  @column.dateTime()
-  declare startDate: DateTime
+  @column()
+  declare startDate: string | null
 
-  @column.dateTime()
-  declare endDate: DateTime | null
+  @column()
+  declare endDate: string | null
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

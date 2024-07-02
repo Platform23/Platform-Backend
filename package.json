@@ -60,6 +60,7 @@
     "@adonisjs/session": "^7.4.1",
     "@adonisjs/transmit": "^1.0.1",
     "@vinejs/vine": "^2.0.0",
+    "edge.js": "^6.0.2",
     "luxon": "^3.4.4",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.2"

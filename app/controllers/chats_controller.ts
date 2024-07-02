@@ -15,7 +15,7 @@ export default class ChatsController {
       const networkId = params.id
 
       if (!networkId) {
-        return response.badRequest({ message: 'Network ID is required.' })
+        return response.badRequest({ message: "L'identifiant du réseau est requis." })
       }
 
       const messages = await Message.query()
@@ -26,7 +26,7 @@ export default class ChatsController {
       return response.ok({ data: messages })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error while fetching messesage.',
+        message: 'Erreur lors de la récupération du message.',
       })
     }
   }
@@ -39,7 +39,7 @@ export default class ChatsController {
       const payload = await request.validateUsing(createMessageValidator)
 
       if (!payload.image && !payload.content) {
-        return response.badRequest({ message: 'Text or image is required' })
+        return response.badRequest({ message: 'Un texte ou une image est requis' })
       }
 
       if (payload.image) {
@@ -61,13 +61,13 @@ export default class ChatsController {
         imagePath: payload.image?.fileName,
       })
 
-      return response.ok({ message: 'Message sent successfully.' })
+      return response.ok({ message: 'Message envoyé avec succès.' })
     } catch (error) {
       if (error.code === 'E_VALIDATION_ERROR') {
         return response.status(422).json({ mesaages: error.messages })
       }
 
-      return response.internalServerError({ message: 'Error storing message.' })
+      return response.internalServerError({ message: 'Erreur de stockage du message.' })
     }
   }
 }

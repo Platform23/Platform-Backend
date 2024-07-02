@@ -5,7 +5,7 @@ export default class VerifyEmailMiddleware {
   // Check if the user is logged in and their email is not verified
   async handle(ctx: HttpContext, next: NextFn) {
     if (ctx.auth.user && !ctx.auth.user.isEmailVerified) {
-      return ctx.response.unauthorized({ message: 'Please verify your email address.' })
+      return ctx.response.unauthorized({ message: 'Veuillez vérifier votre adresse e-mail.' })
     }
 
     await next()

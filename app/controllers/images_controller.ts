@@ -28,7 +28,7 @@ export default class ImagesController {
         basePath = 'uploads/network_images'
         break
       default:
-        return response.badRequest('Invalid image type')
+        return response.badRequest("Type d'image invalide")
     }
     const absolutePath = app.makePath(basePath, normalizedPath)
     return response.download(absolutePath)

@@ -2,7 +2,12 @@ import vine from '@vinejs/vine'
 
 export const registerUserValidator = vine.compile(
   vine.object({
-    pseudo: vine.string().alpha({ allowSpaces: false }).trim().minLength(3).maxLength(100),
+    pseudo: vine
+      .string()
+      .alphaNumeric({ allowSpaces: false, allowDashes: false, allowUnderscores: false })
+      .trim()
+      .minLength(3)
+      .maxLength(100),
     email: vine.string().trim().email(),
     password: vine.string().trim().minLength(8),
     role: vine.enum([1, 2, 3]).optional(),
@@ -12,12 +17,21 @@ export const registerUserValidator = vine.compile(
   })
 )
 
+const emailOrPseudo = vine.group([
+  vine.group.if((data) => 'email' in data, {
+    email: vine.string().trim().email(),
+  }),
+  vine.group.if((data) => 'pseudo' in data, {
+    pseudo: vine.string().trim().minLength(3).maxLength(100),
+  }),
+])
+
 export const loginUserValidator = vine.compile(
-  vine.object({
-    email: vine.string().trim().email().optional(),
-    pseudo: vine.string().trim().minLength(3).maxLength(100).optional(),
-    password: vine.string().trim().minLength(8),
-  })
+  vine
+    .object({
+      password: vine.string().trim().minLength(8),
+    })
+    .merge(emailOrPseudo)
 )
 
 export const emailValidator = vine.compile(

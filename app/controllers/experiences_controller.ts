@@ -2,7 +2,6 @@ import Experience from '#models/experience'
 import ExperiencePolicy from '#policies/experience_policy'
 import { createExperienceValidator, updateExperienceValidator } from '#validators/experience'
 import type { HttpContext } from '@adonisjs/core/http'
-import { DateTime } from 'luxon'
 
 export default class ExperiencesController {
   /**
@@ -15,7 +14,7 @@ export default class ExperiencesController {
       return response.status(200).json({ data: experiences })
     } catch (error) {
       return response.internalServerError({
-        message: 'Error while fetching user experiences.',
+        message: 'Erreur lors de la récupération des expériences utilisateur.',
       })
     }
   }
@@ -30,8 +29,8 @@ export default class ExperiencesController {
         userId: auth.user!.id,
         title: payload.title,
         organization: payload.organization,
-        startDate: DateTime.fromJSDate(payload.startDate),
-        endDate: payload.endDate ? DateTime.fromJSDate(payload.endDate) : null,
+        startDate: payload.startDate,
+        endDate: payload.endDate,
       })
 
       return response.status(201).json({ data: experience })
@@ -41,7 +40,7 @@ export default class ExperiencesController {
       }
 
       return response.internalServerError({
-        message: 'An error occurred while creating experience.',
+        message: "Une erreur s'est produite lors de la création de l'expérience.",
       })
     }
   }
@@ -55,21 +54,19 @@ export default class ExperiencesController {
       const experience = await Experience.find(params.id)
 
       if (!experience) {
-        return response.status(404).json({ message: 'Experience not found.' })
+        return response.status(404).json({ message: 'Expérience introuvable.' })
       }
 
       if (await bouncer.with(ExperiencePolicy).denies('edit', experience)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       await experience
         .merge({
           title: payload.title,
           organization: payload.organization,
-          startDate: payload.startDate
-            ? DateTime.fromJSDate(payload.startDate)
-            : experience.startDate,
-          endDate: payload.endDate ? DateTime.fromJSDate(payload.endDate) : experience.endDate,
+          startDate: payload.startDate,
+          endDate: payload.endDate,
         })
         .save()
 
@@ -80,7 +77,7 @@ export default class ExperiencesController {
       }
 
       return response.internalServerError({
-        message: 'An error occurred while updating experience.',
+        message: "Une erreur s'est produite lors de la mise à jour de l'expérience.",
       })
     }
   }
@@ -93,19 +90,19 @@ export default class ExperiencesController {
       const experience = await Experience.find(params.id)
 
       if (!experience) {
-        return response.status(404).json({ message: 'Experience not found.' })
+        return response.status(404).json({ message: 'Accès refuséExpérience introuvable.' })
       }
 
       if (await bouncer.with(ExperiencePolicy).denies('delete', experience)) {
-        return response.forbidden('Access denied')
+        return response.forbidden('Accès refusé')
       }
 
       await experience.delete()
 
-      return response.status(204).json({ message: 'Experience deleted successfully.' })
+      return response.status(204).json({ message: 'Expérience supprimée avec succès.' })
     } catch (error) {
       return response.internalServerError({
-        message: 'An error occurred while deleting experience.',
+        message: "Une erreur s'est produite lors de la suppression de l'expérience.",
       })
     }
   }

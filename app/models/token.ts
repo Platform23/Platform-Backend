@@ -54,7 +54,7 @@ export default class Token extends BaseModel {
     await Token.expireTokens(user, 'passwordResetTokens')
     const record = await user.related('tokens').create({
       type: 'PASSWORD_RESET',
-      expiresAt: DateTime.now().plus({ hour: 1 }),
+      expiresAt: DateTime.now().plus({ minute: 10 }),
       token,
     })
 
