@@ -76,7 +76,7 @@ router
           router.post('/', [NetworksController, 'store'])
           router.put('/:id', [NetworksController, 'update'])
           router.delete('/:id', [NetworksController, 'destroy'])
-          router.post('/:id/request', [NetworksController, 'requestIntegration'])
+          router.post('/:id/request-integration', [NetworksController, 'requestIntegration'])
           router.post('/:id/add-user/:pseudo', [NetworksController, 'addUserToNetwork'])
           router.delete('/:id/remove-user/:pseudo', [NetworksController, 'removeUserFromNetwork'])
         })
@@ -88,6 +88,7 @@ router
         .group(() => {
           router.get('/:id', [ChatsController, 'index'])
           router.post('/', [ChatsController, 'store'])
+          router.delete('/:id', [ChatsController, 'destroy'])
         })
         .use([middleware.auth(), middleware.emailVerification()])
         .prefix('messages')

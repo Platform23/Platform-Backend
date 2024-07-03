@@ -1,15 +1,21 @@
 import vine from '@vinejs/vine'
 
-export const createMessageValidator = vine.compile(
-  vine.object({
+const contentGroup = vine.group([
+  vine.group.if((data) => 'image' in data, {
+    image: vine.file({
+      size: '10mb',
+      extnames: ['jpg', 'png', 'jpeg'],
+    }),
+  }),
+  vine.group.if((data) => 'content' in data, {
     content: vine.string().trim().minLength(1).optional().nullable(),
-    image: vine
-      .file({
-        size: '10mb',
-        extnames: ['jpg', 'png', 'jpeg'],
-      })
-      .optional()
-      .nullable(),
-    network: vine.number(),
-  })
+  }),
+])
+
+export const createMessageValidator = vine.compile(
+  vine
+    .object({
+      network: vine.number(),
+    })
+    .merge(contentGroup)
 )

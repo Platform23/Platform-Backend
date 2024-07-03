@@ -22,20 +22,10 @@
               <tr>
                 <td>
                   <p style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                    Salut {{ user.pseudo }},
+                    Salut {{ creatorPseudo }},
                   </p>
                   <p style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                    Vous avez demandé à réinitialiser votre mot de passe pour le compte associé à l'adresse e-mail <a href="mailto:{{ user.email }}">{{ user.email }}</a>.
-                  </p>
-                  <p style="line-height:100%;text-decoration:none;display:block;max-width:100%;background-color:#007ee6;border-radius:4px;color:#fff;font-family:'Open Sans', 'Helvetica Neue', Arial;font-size:15px;text-align:center;width:210px;padding:14px 7px 14px 7px">
-                    <span><!--[if mso]><i style="letter-spacing: 7px;mso-font-width:-100%;mso-text-raise:21" hidden>&nbsp;</i><![endif]--></span>
-                    <span style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:10.5px">
-                      <a href="{{ url }}" style="color:#fff">Réinitialiser mon mot de passe</a>
-                    </span>
-                    <span><!--[if mso]><i style="letter-spacing: 7px;mso-font-width:-100%" hidden>&nbsp;</i><![endif]--></span>
-                  </p>
-                  <p style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                    Ce lien est valable pendant 10 minutes. Si vous n'avez pas demandé cette réinitialisation, vous pouvez ignorer cet e-mail.
+                    L' utilisateur au pseudo {{userPseudo}} a demandé l'intégration dans votre réseau {{networkName}}.
                   </p>
                 </td>
               </tr>

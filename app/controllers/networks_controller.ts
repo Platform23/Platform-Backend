@@ -2,6 +2,7 @@ import Network from '#models/network'
 import User from '#models/user'
 import UserNetwork from '#models/user_network'
 import NetworkPolicy from '#policies/network_policy'
+import env from '#start/env'
 import { createNetworkValidator, updateNetworkValidator } from '#validators/network'
 import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
@@ -17,7 +18,7 @@ export default class NetworksController {
     try {
       const networks = await Network.query()
         .preload('subjects', (subject) => subject.select('name'))
-        .select('id', 'name', 'description', 'cover')
+        .select('id', 'uuid', 'name', 'description', 'cover')
 
       return response.status(200).json({ data: networks })
     } catch (error) {
@@ -35,7 +36,9 @@ export default class NetworksController {
       const userNetworks = await UserNetwork.query()
         .where('user_id', auth.user!.id)
         .select('id', 'user_id', 'network_id')
-        .preload('network', (network) => network.select('id', 'name', 'description', 'cover'))
+        .preload('network', (network) =>
+          network.select('id', 'uuid', 'name', 'description', 'cover')
+        )
 
       return response.status(200).json({ data: userNetworks })
     } catch (error) {
@@ -90,10 +93,10 @@ export default class NetworksController {
   async show({ params, response }: HttpContext) {
     try {
       const network = await Network.query()
-        .where('id', params.id)
+        .where('uuid', params.id)
         .preload('subjects', (subject) => subject.select('name'))
         .preload('users', (user) => user.select('pseudo', 'avatar'))
-        .select('id', 'name', 'description', 'cover')
+        .select('id', 'uuid', 'name', 'description', 'cover')
         .first()
 
       if (!network) {
@@ -193,26 +196,17 @@ export default class NetworksController {
       // Send email to the network creator
       await mail.sendLater((message) => {
         message
-          .from('sender@example.com')
+          .from(env.get('EMAIL'))
           .to(creator!.email)
           .subject("Demande d'intégration")
-          .html(
-            `<p>Salut ${creator!.pseudo},</p><p>L' utilisateur au pseudo ${auth.user!.pseudo} a demandé l'intégration dans votre réseau "${network.name}".</p>`
-          )
+          .htmlView('emails/request_network_integration', {
+            creatorPseudo: creator!.pseudo,
+            userPseudo: auth.user!.pseudo,
+            networkName: network.name,
+          })
       })
 
-      // Send email to platform
-      await mail.sendLater((message) => {
-        message
-          .from('sender@example.com')
-          .to('selljo69@gmail.com')
-          .subject("Demande d'intégration")
-          .html(
-            `<p>Salut,</p><p>L'utilisateur au pseudo ${auth.user!.pseudo} a demandé l'intégration dans le réseau "${network.name}".</p>`
-          )
-      })
-
-      return response.status(200).json({ message: 'Request to integrate into network successful.' })
+      return response.status(200).json({ data: "Demande d'intégration au réseau réussie." })
     } catch (error) {
       return response.internalServerError({
         message: "Erreur lors de la demande d'intégration au réseau.",
