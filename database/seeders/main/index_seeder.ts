@@ -9,5 +9,7 @@ export default class extends BaseSeeder {
     await this.seed(await import('#database/seeders/competence_seeder'))
     await this.seed(await import('#database/seeders/profile_seeder'))
     await this.seed(await import('#database/seeders/community_seeder'))
+    await this.seed(await import('#database/seeders/subject_seeder'))
+    // await this.seed(await import('#database/seeders/network_seeder'))
   }
 }
