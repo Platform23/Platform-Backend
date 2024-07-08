@@ -17,10 +17,11 @@ const ExperiencesController = () => import('#controllers/experiences_controller'
 const NetworksController = () => import('#controllers/networks_controller')
 const ChatsController = () => import('#controllers/chats_controller')
 
-router.get('health', ({ response }) => response.noContent())
 
 router
   .group(() => {
+    router.get('health', ({ response }) => response.noContent())
+
     router.group(() => {
       // Authentication routes
       router.group(() => {
