@@ -45,4 +45,5 @@ jobs:
             cd /srv/platform/
             docker-compose pull backend
             docker-compose up -d --no-deps backend
+            docker-compose exec -T backend node ace migration:run
             
