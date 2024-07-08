@@ -45,3 +45,4 @@ jobs:
             cd /srv/platform/
             docker-compose pull backend-image
             docker-compose up -d --no-deps backend-image
+            
