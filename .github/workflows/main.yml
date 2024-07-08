@@ -45,10 +45,3 @@ jobs:
             cd /srv/platform/
             docker-compose pull backend-image
             docker-compose up -d --no-deps backend-image
-            if [ $? -eq 0 ]; then
-              echo "Deployment successful"
-              docker image prune -f
-            else
-              echo "Deployment failed"
-              exit 1
-            fi
