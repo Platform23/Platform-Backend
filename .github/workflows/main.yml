@@ -44,4 +44,5 @@ jobs:
           script: |
             cd /srv/platform/
             docker-compose pull backend
-            docker compose up -d            
+            docker-compose down backend
+            docker compose up -d backend           
