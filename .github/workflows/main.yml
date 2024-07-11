@@ -42,7 +42,7 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/platform/docker
+            cd /home/platform
             docker-compose pull backend
             docker-compose down
             docker compose up -d          
