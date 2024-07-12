@@ -44,5 +44,8 @@ jobs:
           script: |
             cd /home/platform
             docker-compose pull backend
-            docker-compose down
-            docker compose up -d          
+            docker-compose stop backend
+            docker-compose rm -f backend
+            docker image prune -f
+            docker-compose up -d --no-deps backend
+            docker-compose restart traefik        
