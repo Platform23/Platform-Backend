@@ -110,7 +110,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
     await mail.sendLater((message) => {
       message
         .subject('Veuillez vérifier votre e-mail')
-        .from(env.get('EMAIL'))
+        .from('no-reply@platformht.com')
         .to(this.email)
         .htmlView('emails/verify_email', { user: this, url: url })
     })

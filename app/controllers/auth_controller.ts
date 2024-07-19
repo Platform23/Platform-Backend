@@ -116,7 +116,7 @@ export default class AuthController {
 
       await mail.sendLater((message) => {
         message
-          .from(env.get('EMAIL'))
+          .from('no-reply@platformht.com')
           .to(user.email)
           .subject('Réinitialisez votre mot de passe')
           .htmlView('emails/reset_password', { user: user, url: resetLink })

@@ -19,8 +19,8 @@ services:
       retries: 3
       start_period: 5s
     environment:
-      - CF_DNS_API_TOKEN=
-      - CF_API_EMAIL=
+      - CF_DNS_API_TOKEN=EKDLi6HXBT-1DVpmz-FleUByF8TzzaGo6QwplFpw
+      - CF_API_EMAIL=platform.kolonn@gmail.com
     deploy:
       labels:
         - 'traefik.enable=true'
@@ -30,7 +30,7 @@ services:
         - 'traefik.http.routers.dashboard.tls=true'
         - 'traefik.http.routers.dashboard.tls.certresolver=myresolver'
         - 'traefik.http.routers.dashboard.middlewares=auth'
-        - 'traefik.http.middlewares.auth.basicauth.users='
+        - 'traefik.http.middlewares.auth.basicauth.users=platform:$$apr1$$CRHE4iMt$$B/UgXd18E9.QPGcwYg8gR.'
         - 'traefik.http.services.dashboard.loadbalancer.server.port=8080'
 
   prometheus:
@@ -140,9 +140,9 @@ services:
     networks:
       - inbound
     environment:
-      - POSTGRES_DB=
-      - POSTGRES_USER=
-      - POSTGRES_PASSWORD=
+      - POSTGRES_DB=platformDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=JesusSaves!
     volumes:
       - db-data:/var/lib/postgresql/data
 
