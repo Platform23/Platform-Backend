@@ -41,8 +41,7 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring the mail package
   |----------------------------------------------------------
   */
-  SMTP_HOST: Env.schema.string(),
-  SMTP_PORT: Env.schema.string(),
+  RESEND_API_KEY: Env.schema.string(),
   EMAIL: Env.schema.string(),
   DOMAIN: Env.schema.string(),
 })

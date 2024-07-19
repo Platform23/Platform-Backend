@@ -1,27 +1,160 @@
 services:
-  backend:
-    image: backend-image
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: backend-container
+  traefik:
+    image: traefik:v2.3
+    networks:
+      - traefik
+      - inbound
     ports:
-      - 3333:3333
+      - '80:80'
+      - '443:443'
+      - '8080:8080'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./letsencrypt/acme.json:/letsencrypt/acme.json
+    healthcheck:
+      test: ['CMD', 'traefik', 'healthcheck']
+      interval: 10s
+      timeout: 2s
+      retries: 3
+      start_period: 5s
+    environment:
+      - CF_DNS_API_TOKEN=
+      - CF_API_EMAIL=
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.dashboard.rule=Host(`platformht.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))'
+        - 'traefik.http.routers.dashboard.service=api@internal'
+        - 'traefik.http.routers.dashboard.entrypoints=websecure'
+        - 'traefik.http.routers.dashboard.tls=true'
+        - 'traefik.http.routers.dashboard.tls.certresolver=myresolver'
+        - 'traefik.http.routers.dashboard.middlewares=auth'
+        - 'traefik.http.middlewares.auth.basicauth.users='
+        - 'traefik.http.services.dashboard.loadbalancer.server.port=8080'
+
+  prometheus:
+    image: prom/prometheus:v2.22.1
+    networks:
+      - inbound
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    deploy:
+      labels:
+        - 'traefik.http.routers.prometheus.rule=Host(`prometheus.platformht.com`)'
+        - 'traefik.http.routers.prometheus.service=prometheus'
+        - 'traefik.http.routers.prometheus.entrypoints=websecure'
+        - 'traefik.http.routers.prometheus.tls=true'
+        - 'traefik.http.routers.prometheus.tls.certresolver=myresolver'
+        - 'traefik.http.services.prometheus.loadbalancer.server.port=9090'
+        - 'traefik.docker.network=inbound'
+      placement:
+        constraints:
+          - node.role==manager
+      restart_policy:
+        condition: on-failure
+
+  grafana:
+    image: grafana/grafana:7.3.1
+    networks:
+      - inbound
+    depends_on:
+      - prometheus
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+    env_file:
+      - ./grafana/config.monitoring
+    user: '104'
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.grafana.rule=Host(`grafana.platformht.com`)'
+        - 'traefik.http.routers.grafana.service=grafana'
+        - 'traefik.http.routers.grafana.entrypoints=websecure'
+        - 'traefik.http.routers.grafana.tls=true'
+        - 'traefik.http.routers.grafana.tls.certresolver=myresolver'
+        - 'traefik.http.services.grafana.loadbalancer.server.port=3000'
+        - 'traefik.docker.network=inbound'
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: on-failure
+
+  # The frontend service
+  frontend:
+    image: platformht/frontend-image:latest
+    networks:
+      - inbound
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.frontend.rule=Host(`platformht.com`)'
+        - 'traefik.http.routers.frontend.entrypoints=web'
+        - 'traefik.http.routers.frontend.middlewares=redirectscheme'
+        - 'traefik.http.routers.frontend-secure.rule=Host(`platformht.com`)'
+        - 'traefik.http.routers.frontend-secure.entrypoints=websecure'
+        - 'traefik.http.routers.frontend-secure.tls.certresolver=myresolver'
+        - 'traefik.http.routers.frontend-secure.middlewares=mid-ratelimit'
+        - 'traefik.http.services.frontend-secure.loadbalancer.server.port=80'
+        - 'traefik.http.middlewares.mid-ratelimit.ratelimit.average=3'
+        - 'traefik.http.middlewares.redirectscheme.redirectscheme.scheme=https'
+        - 'traefik.http.middlewares.redirectscheme.redirectscheme.permanent=true'
+        - 'traefik.docker.network=inbound'
+      restart_policy:
+        condition: on-failure
+
+  # The backend service
+  backend:
+    image: platformht/backend-image:latest
+    networks:
+      - inbound
     depends_on:
       - db
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.backend.rule=Host(`api.platformht.com`)'
+        - 'traefik.http.routers.backend.entrypoints=web'
+        - 'traefik.http.routers.backend.middlewares=redirectscheme'
+        - 'traefik.http.routers.backend-secure.rule=Host(`api.platformht.com`)'
+        - 'traefik.http.routers.backend-secure.entrypoints=websecure'
+        - 'traefik.http.routers.backend-secure.tls.certresolver=myresolver'
+        - 'traefik.http.services.backend-secure.loadbalancer.server.port=3333'
+        - 'traefik.http.middlewares.redirectscheme.redirectscheme.scheme=https'
+        - 'traefik.http.middlewares.redirectscheme.redirectscheme.permanent=true'
+        - 'traefik.docker.network=inbound'
+      restart_policy:
+        condition: on-failure
 
+  # The database service
   db:
     image: postgres:13
-    restart: unless-stopped
-    container_name: postgres-db
+    networks:
+      - inbound
     environment:
-      - POSTGRES_DB=${DB_DATABASE}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-    ports:
-      - 5432:5432
+      - POSTGRES_DB=
+      - POSTGRES_USER=
+      - POSTGRES_PASSWORD=
     volumes:
       - db-data:/var/lib/postgresql/data
 
+networks:
+  traefik:
+    driver: overlay
+    name: traefik
+  inbound:
+    driver: overlay
+    name: inbound
+
 volumes:
   db-data:
+  prometheus_data: {}
+  grafana_data: {}

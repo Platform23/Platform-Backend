@@ -4,9 +4,6 @@ import type { ManyToMany } from '@adonisjs/lucid/types/relations'
 import User from './user.js'
 
 export default class Community extends BaseModel {
-  static related(arg0: string) {
-    throw new Error('Method not implemented.')
-  }
   @column({ isPrimary: true })
   declare id: number
 
