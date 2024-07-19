@@ -42,10 +42,6 @@ jobs:
           username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            cd /home/platform
-            docker-compose pull backend
-            docker-compose stop backend
-            docker-compose rm -f backend
-            docker image prune -f
-            docker-compose up -d --no-deps backend
-            docker-compose restart traefik        
+            cd /home/stacks
+            docker service update --image platformht/backend-image:latest traefik_backend
+                              
