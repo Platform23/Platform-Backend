@@ -196,7 +196,7 @@ export default class NetworksController {
       // Send email to the network creator
       await mail.sendLater((message) => {
         message
-          .from(env.get('EMAIL'))
+          .from('no-reply@platformht.com')
           .to(creator!.email)
           .subject("Demande d'intégration")
           .htmlView('emails/request_network_integration', {
