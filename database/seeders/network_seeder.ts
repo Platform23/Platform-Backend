@@ -24,7 +24,7 @@ export default class extends BaseSeeder {
       {
         userId: 1,
         uuid: randomUUID(),
-        name: "Communautés d'artisans",
+        name: "Artisans",
         description:
           'Communauté d’artisan.e.s et d’artistes qui partagent des espaces de travail et des ressources pour la création artistique.',
         subjects: [{ name: 'Subject G' }, { name: 'Subject H' }, { name: 'Subject I' }],
@@ -32,7 +32,7 @@ export default class extends BaseSeeder {
       {
         userId: 1,
         uuid: randomUUID(),
-        name: 'Informatique',
+        name: 'TechHub',
         description:
           "Réseaux d'ateliers citoyens d'accès à la fabrication numérique et à l'accompagnement sur les nouvelles technologies.",
         subjects: [{ name: 'Subject J' }, { name: 'Subject K' }, { name: 'Subject L' }],
@@ -40,23 +40,23 @@ export default class extends BaseSeeder {
       {
         userId: 1,
         uuid: randomUUID(),
-        name: 'Makerspaces',
+        name: 'Repair community',
         description:
           'Atelier collaboratif dédié au prototypage, à la fabrication numérique et à des projets collaboratifs entre particuliers et entrepreneurs.',
         subjects: [{ name: 'Subject M' }, { name: 'Subject N' }, { name: 'Subject O' }],
       },
+      // {
+      //   userId: 1,
+      //   uuid: randomUUID(),
+      //   name: 'Intelligence Artificielle',
+      //   description:
+      //     "La communauté IA explore et promeut les technologies d'intelligence artificielle en abordant des sujets tels que l'apprentissage automatique, la vision par ordinateur, etc...",
+      //   subjects: [{ name: 'Subject P' }, { name: 'Subject Q' }, { name: 'Subject R' }],
+      // },
       {
         userId: 1,
         uuid: randomUUID(),
-        name: 'Intelligence Artificielle',
-        description:
-          "La communauté IA explore et promeut les technologies d'intelligence artificielle en abordant des sujets tels que l'apprentissage automatique, la vision par ordinateur, etc...",
-        subjects: [{ name: 'Subject P' }, { name: 'Subject Q' }, { name: 'Subject R' }],
-      },
-      {
-        userId: 1,
-        uuid: randomUUID(),
-        name: 'Technique et Professionnelle',
+        name: 'Education',
         description: 'Centre de formation technique et professionnelle.',
         subjects: [{ name: 'Subject S' }, { name: 'Subject T' }, { name: 'Subject V' }],
       },
