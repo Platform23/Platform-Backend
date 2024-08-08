@@ -8,7 +8,7 @@ import { defineConfig } from '@adonisjs/cors'
  */
 const corsConfig = defineConfig({
   enabled: true,
-  origin: ['https://platformht.com', 'http://frontend_traefik', ' http://localhost:80'],
+  origin: ['https://platformht.com', 'http://frontend_traefik', 'http://localhost:80', 'http://localhost:5173'],
   methods: ['GET', 'HEAD', 'POST', 'PUT', 'DELETE'],
   headers: true,
   exposeHeaders: [],

@@ -1,0 +1,30 @@
+#compose-dev.yml
+
+services:
+  backend:
+    image: platformht/backend-image:latest
+    container_name: backend
+    ports:
+      - "3333:3333"
+    depends_on:
+      - db
+    networks:
+      - inbound
+
+  db:
+    image: postgres:13
+    container_name: postgres
+    environment:
+      - POSTGRES_DB=platformDB
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=JesusSaves!
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - inbound
+
+volumes:
+  db-data:
+
+networks:
+  inbound:
