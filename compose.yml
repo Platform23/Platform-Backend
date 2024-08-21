@@ -1,6 +1,6 @@
 services:
   traefik:
-    image: traefik:v2.3
+    image: traefik:v2.5
     networks:
       - traefik
       - inbound
@@ -8,6 +8,7 @@ services:
       - '80:80'
       - '443:443'
       - '8080:8080'
+      - '5050:5050'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - ./traefik.yml:/etc/traefik/traefik.yml
@@ -20,17 +21,17 @@ services:
       start_period: 5s
     environment:
       - CF_DNS_API_TOKEN=
-      - CF_API_EMAIL=platform.kolonn@gmail.com
+      - CF_API_EMAIL=
     deploy:
       labels:
         - 'traefik.enable=true'
-        - 'traefik.http.routers.dashboard.rule=Host(`platformht.com`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))'
+        - 'traefik.http.routers.dashboard.rule=Host(`admin.platformht.com`)'
         - 'traefik.http.routers.dashboard.service=api@internal'
         - 'traefik.http.routers.dashboard.entrypoints=websecure'
         - 'traefik.http.routers.dashboard.tls=true'
         - 'traefik.http.routers.dashboard.tls.certresolver=myresolver'
         - 'traefik.http.routers.dashboard.middlewares=auth'
-        - 'traefik.http.middlewares.auth.basicauth.users=platform:$$apr1$$CRHE4iMt$$B/UgXd18E9.QPGcwYg8gR.'
+        - 'traefik.http.middlewares.auth.basicauth.users='
         - 'traefik.http.services.dashboard.loadbalancer.server.port=8080'
 
   prometheus:
@@ -104,7 +105,7 @@ services:
         - 'traefik.http.routers.frontend-secure.tls.certresolver=myresolver'
         - 'traefik.http.routers.frontend-secure.middlewares=mid-ratelimit'
         - 'traefik.http.services.frontend-secure.loadbalancer.server.port=80'
-        - 'traefik.http.middlewares.mid-ratelimit.ratelimit.average=3'
+        - 'traefik.http.middlewares.mid-ratelimit.ratelimit.average=20'
         - 'traefik.http.middlewares.redirectscheme.redirectscheme.scheme=https'
         - 'traefik.http.middlewares.redirectscheme.redirectscheme.permanent=true'
         - 'traefik.docker.network=inbound'
@@ -128,6 +129,32 @@ services:
         - 'traefik.http.routers.backend-secure.entrypoints=websecure'
         - 'traefik.http.routers.backend-secure.tls.certresolver=myresolver'
         - 'traefik.http.services.backend-secure.loadbalancer.server.port=3333'
+        - 'traefik.http.middlewares.redirectscheme.redirectscheme.scheme=https'
+        - 'traefik.http.middlewares.redirectscheme.redirectscheme.permanent=true'
+        - 'traefik.docker.network=inbound'
+      restart_policy:
+        condition: on-failure
+
+# The pgadmin service
+  pgadmin:
+    image: dpage/pgadmin4
+    networks:
+      - inbound
+    depends_on:
+      - db
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 
+      PGADMIN_DEFAULT_PASSWORD: 
+    deploy:
+      labels:
+        - 'traefik.enable=true'
+        - 'traefik.http.routers.pgadmin.rule=Host(`pgadmin.platformht.com`)'
+        - 'traefik.http.routers.pgadmin.entrypoints=web'
+        - 'traefik.http.routers.pgadmin.middlewares=redirectscheme'
+        - 'traefik.http.routers.pgadmin-secure.rule=Host(`pgadmin.platformht.com`)'
+        - 'traefik.http.routers.pgadmin-secure.entrypoints=websecure'
+        - 'traefik.http.routers.pgadmin-secure.tls.certresolver=myresolver'
+        - 'traefik.http.services.pgadmin-secure.loadbalancer.server.port=80'
         - 'traefik.http.middlewares.redirectscheme.redirectscheme.scheme=https'
         - 'traefik.http.middlewares.redirectscheme.redirectscheme.permanent=true'
         - 'traefik.docker.network=inbound'
