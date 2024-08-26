@@ -7,7 +7,8 @@ export const createNetworkValidator = vine.compile(
     cover: vine.file({
       size: '10mb',
       extnames: ['jpg', 'png', 'jpeg'],
-    }),
+    })
+    .optional(),
     subjects: vine.array(vine.number()),
   })
 )
