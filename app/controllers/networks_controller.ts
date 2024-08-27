@@ -70,7 +70,7 @@ export default class NetworksController {
         userId: auth.user!.id,
         name: payload.name,
         description: payload.description,
-        cover: payload.cover.fileName,
+        cover: payload.cover?.fileName,
       })
 
       await network.related('subjects').attach(payload.subjects)
