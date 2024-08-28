@@ -25,6 +25,42 @@ export default class UsersController {
     }
   }
 
+  async store({ response, request }: HttpContext) {
+    try {
+      const payload = await request.validateUsing(registerUserValidator)
+
+      const user = await User.create({
+        uuid: randomUUID(),
+        pseudo: payload.pseudo,
+        email: payload.email,
+        password: payload.password,
+        role: payload.role,
+        isEmailVerified: true,
+      })
+
+      await user.related('competences').attach(payload.competences)
+      await user.related('communities').attach(payload.communities)
+      await user.related('profiles').attach(payload.profiles)
+
+      return response.status(201).json({ data: user })
+    } catch (error) {
+      if (error.code === 'E_VALIDATION_ERROR') {
+        return response.status(422).json({ messages: error.messages })
+      }
+
+      if (error.code === '23505') {
+        const conflictField = error.constraint.includes('email') ? 'email' : 'pseudo'
+        return response
+          .status(409)
+          .json({ message: `L'utilisateur avec ce(t) ${conflictField} existe déjà.` })
+      }
+
+      return response.internalServerError({
+        message: "Une erreur s'est produite lors de l'inscription.",
+      })
+    }
+  }
+
   /**
    * Show individual user
    */

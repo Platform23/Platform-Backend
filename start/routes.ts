@@ -44,7 +44,7 @@ router
       router
         .resource('users', UsersController)
         .use(
-          ['index', 'show', 'update', 'destroy'],
+          ['index', 'store', 'show', 'update', 'destroy'],
           [middleware.auth(), middleware.emailVerification()]
         )
 
