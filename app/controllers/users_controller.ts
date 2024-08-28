@@ -1,6 +1,6 @@
 import User from '#models/user'
 import UserPolicy from '#policies/user_policy'
-import { updateUserValidator } from '#validators/auth'
+import { updateUserValidator, registerUserValidator } from '#validators/auth'
 import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
@@ -56,7 +56,7 @@ export default class UsersController {
       }
 
       return response.internalServerError({
-        message: error,
+        message: "Une erreur s'est produite lors de la creation de l'utilisateur.",
       })
     }
   }
