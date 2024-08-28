@@ -5,16 +5,16 @@ export default class extends BaseSeeder {
   async run() {
     await Competence.createMany([
       {
-        name: "Savoir utiliser les technologies numériques pour la gestion de l'information et des médias",
+        name: "Gestion de l'information et des médias numériques",
       },
-      { name: 'Savoir utiliser les technologies numériques pour communiquer et collaborer' },
-      { name: 'Faire preuse de pensée computationnelle et critique' },
+      { name: 'Communication et collaboration numériques' },
+      { name: 'Pensée computationnelle et critique' },
       {
-        name: 'Utiliser les technologies numériques pour favoriser son insertion et son développement professionnel',
+        name: 'Insertion et développement professionnel numérique',
       },
-      { name: 'Mobiliser ses habiletés technologiques et numériques pour innover et créer' },
-      { name: 'Savoir gérer et piloter des projets avec une communauté de professionnel.le.s' },
-      { name: 'Accompagner – Former et apprendre avec les autres' },
+      { name: 'Innovation et création numériques' },
+      { name: 'Gestion et pilotage de projets collaboratifs' },
+      { name: 'Accompagnement et formation' },
     ])
   }
 }
