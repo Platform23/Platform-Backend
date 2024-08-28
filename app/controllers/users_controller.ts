@@ -56,7 +56,7 @@ export default class UsersController {
       }
 
       return response.internalServerError({
-        message: "Une erreur s'est produite lors de la creation de l'utilisateur.",
+        message: error.message,
       })
     }
   }
