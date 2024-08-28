@@ -4,6 +4,7 @@ import { updateUserValidator, registerUserValidator } from '#validators/auth'
 import { cuid } from '@adonisjs/core/helpers'
 import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import { randomUUID } from 'node:crypto'
 
 export default class UsersController {
   /**
@@ -56,7 +57,7 @@ export default class UsersController {
       }
 
       return response.internalServerError({
-        message: error.message,
+        message: "Une erreur s'est produite lors de la creation de l'utilisateur.",
       })
     }
   }
