@@ -39,7 +39,7 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
-  @column({ serializeAs: null })
+  @column()
   declare role: number
 
   @column()
