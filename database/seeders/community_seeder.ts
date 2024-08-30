@@ -13,6 +13,7 @@ export default class extends BaseSeeder {
       { name: 'Communautés open source hardware' },
       { name: "Écoles de hackers et d'ateliers techniques" },
       { name: 'Bibliothèques makerspaces' },
+      { name: 'Centre de formation professionnelle' },
     ])
   }
 }
