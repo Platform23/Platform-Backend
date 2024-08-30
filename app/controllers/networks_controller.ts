@@ -252,8 +252,19 @@ export default class NetworksController {
           })
       })
 
+       await mail.sendLater((message) => {
+        message
+          .from('no-reply@platformht.com')
+          .to(user!.email)
+          .subject("Confirmation d'intégration")
+          .htmlView('emails/network_integration', {
+            userPseudo: user!.pseudo,
+            networkName: network.name,
+          })
+      })
+
       return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.' , userPseudo: user!.pseudo,
-            networkName: network.name})
+            networkName: network.name, user!.email})
     } catch (error) {
       return response.internalServerError({
         message: "Erreur lors de l'ajout d'un utilisateur au réseau.",
