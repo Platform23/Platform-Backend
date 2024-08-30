@@ -264,7 +264,7 @@ export default class NetworksController {
       })
 
       return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.' , userPseudo: user!.pseudo,
-            networkName: network.name, user!.email})
+            networkName: network.name,ff: user!.email})
     } catch (error) {
       return response.internalServerError({
         message: "Erreur lors de l'ajout d'un utilisateur au réseau.",
