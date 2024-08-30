@@ -244,15 +244,16 @@ export default class NetworksController {
       await mail.sendLater((message) => {
         message
           .from('no-reply@platformht.com')
-          .to(user.email)
+          .to(user!.email)
           .subject("Confirmation")
           .htmlView('emails/network_integration', {
-            userPseudo: user.pseudo,
+            userPseudo: user!.pseudo,
             networkName: network.name,
           })
       })
 
-      return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.' })
+      return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.' , userPseudo: user!.pseudo,
+            networkName: network.name})
     } catch (error) {
       return response.internalServerError({
         message: "Erreur lors de l'ajout d'un utilisateur au réseau.",
