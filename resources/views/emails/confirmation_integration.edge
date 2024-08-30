@@ -2,74 +2,49 @@
 <html dir="ltr" lang="en">
 
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
-    <meta name="x-apple-disable-message-reformatting" />
-    <style>
-        a {
-            text-decoration: none;
-            color: inherit;
-        }
-    </style>
+  <meta content="text/html; charset=UTF-8" http-equiv="Content-Type" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <style>
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
 </head>
 
 <body style="background-color:#f6f9fc;padding:10px 0">
-    <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation"
-        style="max-width:37.5em;background-color:#ffffff;border:1px solid #f0f0f0;padding:45px">
-        <tbody>
-            <tr style="width:100%">
+  <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation" style="max-width:37.5em;background-color:#ffffff;border:1px solid #f0f0f0;padding:45px">
+    <tbody>
+      <tr style="width:100%">
+        <td>
+          <table align="center" width="100%" border="0" cellPadding="0" cellSpacing="0" role="presentation">
+            <tbody>
+              <tr>
                 <td>
-                    <table align="center" width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation">
-                        <tbody>
-                            <tr>
-                                <td align="center" style="padding-bottom:20px;">
-                                    <img src="{{ url('resources/images/logo-large.png') }}" alt="Logo" style="max-width: 100%; height: auto;">
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <p
-                                        style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                                        Bonjour {{ userPseudo }},
-                                    </p>
-                                    <p
-                                        style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                                        Je te souhaite la bienvenue dans le réseau {{networkName}}. Je suis ton mentor
-                                        et je suis ici
-                                        pour t'assister dans ton intégration dans Platform.
-                                        Platform est un espace de co-construction de savoirs et de co-création de
-                                        projets. Il est dédié à ceux et celles qui désirent mettre en communs leurs
-                                        expériences, leurs savoir-faire, leurs pratiques, des modèles et des outils.
-                                        Dans Platform il n'y a pas d'expert.e.s ou de conseillers - conseillères
-                                        principales, nous sommes tous et toutes animées du désir d'apprendre les uns des
-                                        autres dans un climat de confiance.
-                                        Mon rôle de mentor est de t'aider à tisser les liens avec les autres membres du
-                                        réseau et à t'accompagner dans la planification et la conception d'un projet
-                                        collaboratif en communauté de pratique.
-                                        Je suis aussi disponible pour m'engager avec toi dans chaque étape de réflexion
-                                        de ta communauté de pratique autour d'un projet.
-                                    </p>
-
-                                    <p
-                                        style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                                        Pour démarrer ton intégration, je t'invite à compléter ton profil, à renseigner
-                                        sur tes compétences et expertises de sorte que les autres puissent mieux te
-                                        connaitre et s'engager à collaborer avec toi.
-                                        N'hésites pas à poser tes questions et à partager tes expériences avec le
-                                        groupe.
-                                    </p>
-
-                                    <p
-                                        style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
-                                        Bienvenue dans le réseau {{networkName}}
-                                    </p>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                  <p style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
+                    Salut {{ user.pseudo }},
+                  </p>
+                  <p style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
+                    Vérifiez-vous ci-dessous pour vous connecter à votre compte Platform pour <a href="mailto:{{ user.email }}">{{ user.email }}</a>.
+                  </p>
+                  <p style="line-height:100%;text-decoration:none;display:block;max-width:100%;background-color:#007ee6;border-radius:4px;color:#fff;font-family:'Open Sans', 'Helvetica Neue', Arial;font-size:15px;text-align:center;width:210px;padding:14px 7px 14px 7px">
+                    <span><!--[if mso]><i style="letter-spacing: 7px;mso-font-width:-100%;mso-text-raise:21" hidden>&nbsp;</i><![endif]--></span>
+                    <span style="max-width:100%;display:inline-block;line-height:120%;mso-padding-alt:0px;mso-text-raise:10.5px">
+                      <a href="" style="color:#fff">Vérifiez-moi</a>
+                    </span>
+                    <span><!--[if mso]><i style="letter-spacing: 7px;mso-font-width:-100%" hidden>&nbsp;</i><![endif]--></span>
+                  </p>
+                  <p style="font-size:16px;line-height:26px;margin:16px 0;font-family:'Open Sans', 'HelveticaNeue-Light', 'Helvetica Neue Light', 'Helvetica Neue', Helvetica, Arial, 'Lucida Grande', sans-serif;font-weight:300;color:#404040">
+                    Le lien ne peut être utilisé qu’une seule fois et expire au bout de 10 minutes si vous ne l’utilisez pas.
+                  </p>
                 </td>
-            </tr>
-        </tbody>
-    </table>
+              </tr>
+            </tbody>
+          </table>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </body>
 
 </html>
