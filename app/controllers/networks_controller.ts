@@ -241,30 +241,27 @@ export default class NetworksController {
 
 
       // Send email to user
-      await mail.sendLater((message) => {
-        message
-          .from('no-reply@platformht.com')
-          .to(user!.email)
-          .subject("Confirmation")
-          .htmlView('emails/network_integration', {
-            userPseudo: user!.pseudo,
-            networkName: network.name,
-          })
-      })
 
        await mail.sendLater((message) => {
         message
           .from('no-reply@platformht.com')
           .to(user!.email)
           .subject("Confirmation d'intégration")
-          .htmlView('emails/network_integration', {
+          .htmlView('emails/confirmation_integration', {
             userPseudo: user!.pseudo,
             networkName: network.name,
           })
       })
 
-      return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.' , userPseudo: user!.pseudo,
-            networkName: network.name,ff: user!.email})
+      await mail.sendLater((message) => {
+      message
+        .subject('Confirmation')
+        .from('no-reply@platformht.com')
+        .to(user!.email)
+        .htmlView('emails/verify_email', { user: user, url: "https://github.com/Platform23/Platform-Backend" })
+    })
+
+      return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.'})
     } catch (error) {
       return response.internalServerError({
         message: "Erreur lors de l'ajout d'un utilisateur au réseau.",
