@@ -9,6 +9,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import mail from '@adonisjs/mail/services/main'
 import { randomUUID } from 'node:crypto'
+import {platformLogo} from '../../resources/images/logo-large.png'
 
 export default class NetworksController {
   /**
@@ -219,6 +220,7 @@ export default class NetworksController {
    */
   async addUserToNetwork({ bouncer, params, response }: HttpContext) {
     try {
+      const logo = platformLogo
       const network = await Network.find(params.id)
 
       if (!network) {
@@ -246,7 +248,7 @@ export default class NetworksController {
         .subject('Confirmation')
         .from('no-reply@platformht.com')
         .to(user!.email)
-        .htmlView('emails/confirmation_integration', { user: user, network: network})
+        .htmlView('emails/confirmation_integration', { user: user, network: network, logo: logo})
     })
 
       return response.status(201).json({ message: 'Utilisateur ajouté au réseau avec succès.'})
