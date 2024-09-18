@@ -8,7 +8,7 @@ export default class UserPolicy extends BasePolicy {
   }
 
   index(user: User): AuthorizerResponse {
-    return user.role === 3
+    return user.role === 3 || user.role === 2
   }
 
   show(): AuthorizerResponse {
