@@ -25,10 +25,10 @@ export default class NetworkPolicy extends BasePolicy {
   }
 
   addUser(user: User, network: Network): AuthorizerResponse {
-    return user.role === 3 || user.id === network.userId
+    return user.role === 3 || user.role === 2 || user.id === network.userId
   }
 
   removeUser(user: User, network: Network): AuthorizerResponse {
-    return user.role === 3 || user.id === network.userId
+    return user.role === 3 || user.id === network.userId || user.role === 2
   }
 }
