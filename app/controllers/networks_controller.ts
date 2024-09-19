@@ -95,7 +95,7 @@ export default class NetworksController {
       const network = await Network.query()
         .where('uuid', params.id)
         .preload('subjects', (subject) => subject.select('name'))
-        .preload('users', (user) => user.select('pseudo', 'avatar'))
+        .preload('users', (user) => user.select('pseudo', 'uuid', 'avatar'))
         .select('id', 'uuid', 'name', 'description', 'cover')
         .first()
 
