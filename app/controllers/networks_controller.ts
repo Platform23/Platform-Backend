@@ -17,7 +17,7 @@ export default class NetworksController {
   async index({ response }: HttpContext) {
     try {
       const networks = await Network.query()
-        .preload('subjects', (subject) => subject.select('name'))
+        .preload('subjects', (subject) => subject.select('name', 'link'))
         .select('id', 'uuid', 'name', 'description', 'cover')
 
       return response.status(200).json({ data: networks })
@@ -94,7 +94,7 @@ export default class NetworksController {
     try {
       const network = await Network.query()
         .where('uuid', params.id)
-        .preload('subjects', (subject) => subject.select('name'))
+        .preload('subjects', (subject) => subject.select('name', 'link'))
         .preload('users', (user) => user.select('pseudo', 'uuid', 'avatar'))
         .select('id', 'uuid', 'name', 'description', 'cover')
         .first()

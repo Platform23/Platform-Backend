@@ -10,14 +10,15 @@ export default class Subject extends BaseModel {
   @column()
   declare name: string
 
+  @column()
+  declare link: string | null
+  
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
-  @column()
-  declare link: string | null
 
   @manyToMany(() => Network, {
     pivotTable: 'network_subjects',
